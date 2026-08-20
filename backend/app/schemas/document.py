@@ -1,0 +1,18 @@
+from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict
+
+from app.models.document import DocumentCategory, DocumentStatus
+
+
+class DocumentRead(BaseModel):
+    document_id: str
+    deal_id: str
+    file_name: str
+    category: DocumentCategory
+    file_path: str
+    status: DocumentStatus
+    summary: str | None
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
