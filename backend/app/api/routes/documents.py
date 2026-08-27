@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
@@ -15,3 +16,23 @@ def get_document(document_id: str, db: Session = Depends(get_db)) -> DocumentRea
     if document is None:
         raise HTTPException(status_code=404, detail="Document not found")
     return document
+
+
+@router.get("/documents/{document_id}/download")
+def download_document(document_id: str, db: Session = Depends(get_db)) -> FileResponse:
+    document = document_service.get_document(db, document_id)
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+    try:
+        file_path = document_service.get_document_file(document)
+    except FileNotFoundError as error:
+        raise HTTPException(status_code=404, detail="Stored file not found") from error
+    return FileResponse(file_path, media_type=document.content_type, filename=document.file_name)
+
+
+@router.delete("/documents/{document_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_document(document_id: str, db: Session = Depends(get_db)) -> None:
+    document = document_service.get_document(db, document_id)
+    if document is None:
+        raise HTTPException(status_code=404, detail="Document not found")
+    document_service.delete_document(db, document)

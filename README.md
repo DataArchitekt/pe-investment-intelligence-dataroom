@@ -4,7 +4,7 @@ An AI-powered Deal Data Room that turns seller documents into investment intelli
 
 ## Current MVP phase
 
-**Day 1 — Application Skeleton.** This phase provides a locally runnable deal workspace, an empty data room, and clean seams for future AI and storage integrations. No Azure service is required.
+**Day 1 — Local Data Room.** This phase provides a locally runnable deal workspace and document repository. No Azure service is required.
 
 ## Architecture
 
@@ -61,7 +61,6 @@ Open the displayed Vite URL (normally `http://localhost:5173`). The UI reads the
 ### 4. Tests
 
 ```bash
-cd backend
 pytest
 ```
 
@@ -72,12 +71,26 @@ pytest
 - `GET /api/deals/{deal_id}`
 - `POST /api/deals`
 - `GET /api/deals/{deal_id}/documents`
+- `POST /api/deals/{deal_id}/documents` (multipart `file` + `category`)
 - `GET /api/documents/{document_id}`
+- `GET /api/documents/{document_id}/download`
+- `DELETE /api/documents/{document_id}`
 
 On first start, the database seeds `ABC-HYD-001` / ABC Hydraulic Systems. Every document requires a `deal_id`, establishing the scope required for later deal-filtered retrieval.
+
+## Day 1 capabilities
+
+- Local upload and storage for PDF, DOCX, TXT, and XLSX files (25 MB default limit)
+- Manual category selection, metadata, file size, upload date, and `Pending` processing status
+- Per-deal document listings, category counts, download/open, and deletion
+- Filename sanitisation and duplicate preservation (`file (1).pdf`), with no uploaded files committed to Git
+
+**Current storage:** local filesystem under `data/documents/<deal-id>/<category>/`.
+
+**Future storage:** Azure Blob / ADLS Gen2 through a replacement storage adapter. Azure infrastructure is intentionally not connected in this phase.
 
 ## Future components — not implemented
 
 The code contains abstract contracts for `StorageService`, `DocumentProcessor`, `EmbeddingService`, `LLMService`, and `VectorSearchService`. Future work may supply Azure Blob/ADLS, Azure OpenAI, and Azure AI Search adapters.
 
-The following are explicitly out of scope for Day 1: document uploads and parsing, ADLS/Blob, Azure OpenAI, Azure AI Search, embeddings, vector search, RAG, citations, and diligence intelligence.
+The following are explicitly out of scope for Day 1: document parsing, ADLS/Blob, Azure OpenAI, Azure AI Search, embeddings, vector search, RAG, citations, and diligence intelligence.

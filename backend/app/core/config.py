@@ -11,6 +11,8 @@ class Settings(BaseSettings):
 
     database_url: str = "sqlite:///./data/app.db"
     frontend_origin: str = "http://localhost:5173"
+    document_storage_path: str = "./data/documents"
+    document_max_upload_size_mb: int = 25
 
     azure_storage_account: str | None = None
     azure_storage_container: str | None = None

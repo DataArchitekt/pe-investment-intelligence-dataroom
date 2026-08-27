@@ -16,5 +16,5 @@ export default function App() {
   useEffect(() => { api.listDeals().then(deals => { setDeals(deals); setSelectedDeal(deals[0] ?? null) }).catch(() => setError('The API is unavailable. Start the FastAPI backend and refresh.')) }, [])
   useEffect(() => { if (selectedDeal) api.listDocuments(selectedDeal.deal_id).then(setDocuments).catch(() => setError('Unable to load documents.')) }, [selectedDeal])
   const selectDeal = (deal: Deal) => { setSelectedDeal(deal); setView('deal') }
-  return <Layout onNavigate={setView}>{error && <p className="error">{error}</p>}{view === 'dashboard' && <DashboardPage deals={deals} onSelect={selectDeal} />}{view === 'deal' && selectedDeal && <DealPage deal={selectedDeal} documentCount={documents.length} onOpenDataRoom={() => setView('data-room')} />}{view === 'data-room' && <DataRoomPage documents={documents} />}</Layout>
+  return <Layout onNavigate={setView}>{error && <p className="error">{error}</p>}{view === 'dashboard' && <DashboardPage deals={deals} onSelect={selectDeal} />}{view === 'deal' && selectedDeal && <DealPage deal={selectedDeal} documentCount={documents.length} onOpenDataRoom={() => setView('data-room')} />}{view === 'data-room' && selectedDeal && <DataRoomPage deal={selectedDeal} documents={documents} onDocumentsChanged={setDocuments} />}</Layout>
 }

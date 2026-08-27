@@ -1,7 +1,7 @@
 from datetime import datetime
 from enum import Enum
 
-from sqlalchemy import DateTime, Enum as SqlEnum, ForeignKey, String, Text
+from sqlalchemy import DateTime, Enum as SqlEnum, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.database import Base
@@ -35,6 +35,11 @@ class Document(Base):
     file_path: Mapped[str] = mapped_column(String(1024), nullable=False)
     status: Mapped[DocumentStatus] = mapped_column(SqlEnum(DocumentStatus), nullable=False)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    file_size: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    content_type: Mapped[str] = mapped_column(
+        String(255), default="application/octet-stream", nullable=False
+    )
+    original_file_name: Mapped[str] = mapped_column(String(255), default="", nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     deal: Mapped["Deal"] = relationship(back_populates="documents")

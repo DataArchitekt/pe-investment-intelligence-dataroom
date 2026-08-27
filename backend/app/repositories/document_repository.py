@@ -11,3 +11,13 @@ class DocumentRepository:
 
     def get_by_id(self, db: Session, document_id: str) -> Document | None:
         return db.get(Document, document_id)
+
+    def create(self, db: Session, document: Document) -> Document:
+        db.add(document)
+        db.commit()
+        db.refresh(document)
+        return document
+
+    def delete(self, db: Session, document: Document) -> None:
+        db.delete(document)
+        db.commit()

@@ -6,7 +6,16 @@ from pathlib import Path
 
 class StorageService(ABC):
     @abstractmethod
-    def store(self, source: Path, destination: str) -> str: ...
+    def save_file(self, deal_id: str, category: str, file_name: str, content: bytes) -> str: ...
+
+    @abstractmethod
+    def get_file(self, file_path: str) -> Path: ...
+
+    @abstractmethod
+    def delete_file(self, file_path: str) -> None: ...
+
+    @abstractmethod
+    def file_exists(self, file_path: str) -> bool: ...
 
 
 class DocumentProcessor(ABC):

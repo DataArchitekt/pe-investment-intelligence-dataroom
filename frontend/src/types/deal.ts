@@ -18,5 +18,8 @@ export interface Document {
   file_path: string
   status: string
   summary: string | null
+  file_size: number
+  content_type: string
+  original_file_name: string
   created_at: string
 }
