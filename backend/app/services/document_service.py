@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.integrations.storage.local import LocalStorageService
 from app.models.document import Document, DocumentCategory, DocumentStatus
 from app.repositories.document_repository import DocumentRepository
+from app.services.document_processing_service import DocumentProcessingService
 
 ALLOWED_EXTENSIONS = {".pdf", ".docx", ".txt", ".xlsx"}
 
@@ -20,9 +21,13 @@ class DocumentService:
         self,
         repository: DocumentRepository | None = None,
         storage: LocalStorageService | None = None,
+        processing_service: DocumentProcessingService | None = None,
     ) -> None:
         self.repository = repository or DocumentRepository()
         self.storage = storage or LocalStorageService()
+        self.processing_service = processing_service or DocumentProcessingService(
+            self.storage, self.repository
+        )
 
     def list_documents_for_deal(self, db: Session, deal_id: str) -> list[Document]:
         return self.repository.list_for_deal(db, deal_id)
@@ -42,7 +47,7 @@ class DocumentService:
         safe_path = self.storage.save_file(deal_id, category.value, file_name, content)
         stored_name = Path(safe_path).name
         try:
-            return self.repository.create(
+            document = self.repository.create(
                 db,
                 Document(
                     document_id=f"DOC-{uuid4().hex[:16].upper()}",
@@ -56,6 +61,7 @@ class DocumentService:
                     content_type=mimetypes.guess_type(stored_name)[0] or "application/octet-stream",
                 ),
             )
+            return self.processing_service.process(db, document)
         except Exception:
             self.storage.delete_file(safe_path)
             raise
@@ -66,3 +72,6 @@ class DocumentService:
     def delete_document(self, db: Session, document: Document) -> None:
         self.storage.delete_file(document.file_path)
         self.repository.delete(db, document)
+
+    def reprocess_document(self, db: Session, document: Document) -> Document:
+        return self.processing_service.process(db, document)

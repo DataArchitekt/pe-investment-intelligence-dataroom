@@ -40,6 +40,15 @@ class Document(Base):
         String(255), default="application/octet-stream", nullable=False
     )
     original_file_name: Mapped[str] = mapped_column(String(255), default="", nullable=False)
+    page_count: Mapped[int] = mapped_column(Integer, default=0, nullable=False)
+    processing_error: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
 
     deal: Mapped["Deal"] = relationship(back_populates="documents")
+    chunks: Mapped[list["DocumentChunk"]] = relationship(
+        back_populates="document", cascade="all, delete-orphan", order_by="DocumentChunk.chunk_index"
+    )
+
+    @property
+    def chunk_count(self) -> int:
+        return len(self.chunks)

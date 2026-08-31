@@ -20,7 +20,7 @@ class StorageService(ABC):
 
 class DocumentProcessor(ABC):
     @abstractmethod
-    def process(self, source: Path) -> str: ...
+    def extract(self, source: Path) -> list[object]: ...
 
 
 class EmbeddingService(ABC):

@@ -23,3 +23,6 @@ class Deal(Base):
     documents: Mapped[list["Document"]] = relationship(
         back_populates="deal", cascade="all, delete-orphan"
     )
+    chunks: Mapped[list["DocumentChunk"]] = relationship(
+        back_populates="deal", cascade="all, delete-orphan"
+    )

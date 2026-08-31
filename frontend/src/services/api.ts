@@ -1,4 +1,4 @@
-import type { Deal, Document } from '../types/deal'
+import type { Deal, Document, DocumentChunk } from '../types/deal'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
 
@@ -28,6 +28,13 @@ export const api = {
   deleteDocument: async (documentId: string): Promise<void> => {
     const response = await fetch(`${API_URL}/api/documents/${documentId}`, { method: 'DELETE' })
     if (!response.ok) throw new Error(await errorMessage(response))
+  },
+  getDocument: (documentId: string) => request<Document>(`/api/documents/${documentId}`),
+  listChunks: (documentId: string) => request<DocumentChunk[]>(`/api/documents/${documentId}/chunks`),
+  reprocessDocument: async (documentId: string): Promise<Document> => {
+    const response = await fetch(`${API_URL}/api/documents/${documentId}/process`, { method: 'POST' })
+    if (!response.ok) throw new Error(await errorMessage(response))
+    return response.json() as Promise<Document>
   },
   downloadUrl: (documentId: string) => `${API_URL}/api/documents/${documentId}/download`,
 }

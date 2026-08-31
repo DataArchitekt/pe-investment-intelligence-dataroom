@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+import app.models  # Registers every SQLAlchemy model before create_all.
 from app.api.routes import deals, documents
 from app.core.config import settings
 from app.core.database import Base, SessionLocal, engine, ensure_schema

@@ -4,7 +4,7 @@ An AI-powered Deal Data Room that turns seller documents into investment intelli
 
 ## Current MVP phase
 
-**Day 1 — Local Data Room.** This phase provides a locally runnable deal workspace and document repository. No Azure service is required.
+**Day 2 — Document Processing.** This phase adds local PDF/DOCX/TXT extraction, deterministic chunking, and chunk metadata. No Azure service is required.
 
 ## Architecture
 
@@ -73,6 +73,8 @@ pytest
 - `GET /api/deals/{deal_id}/documents`
 - `POST /api/deals/{deal_id}/documents` (multipart `file` + `category`)
 - `GET /api/documents/{document_id}`
+- `GET /api/documents/{document_id}/chunks`
+- `POST /api/documents/{document_id}/process`
 - `GET /api/documents/{document_id}/download`
 - `DELETE /api/documents/{document_id}`
 
@@ -88,6 +90,22 @@ On first start, the database seeds `ABC-HYD-001` / ABC Hydraulic Systems. Every 
 **Current storage:** local filesystem under `data/documents/<deal-id>/<category>/`.
 
 **Future storage:** Azure Blob / ADLS Gen2 through a replacement storage adapter. Azure infrastructure is intentionally not connected in this phase.
+
+## Day 2 capabilities
+
+After upload, documents are processed synchronously for local MVP-sized files:
+
+```text
+Document → extraction → conservative text cleaning → word-based chunks → SQLite → Processed
+```
+
+- PDF extraction preserves one-based page numbers.
+- DOCX paragraphs, headings, and basic table rows are retained where available; Word page numbers remain unknown.
+- TXT is supported as a single logical document.
+- Chunks retain `deal_id`, `document_id`, source page, section (when available), sequential index, word-based token approximation, and character count.
+- XLSX uploads remain supported for storage but deliberately move to `Failed` processing with a clear message; spreadsheet extraction is deferred.
+
+No embeddings, vector search, Azure services, RAG, or AI summaries are implemented.
 
 ## Future components — not implemented
 

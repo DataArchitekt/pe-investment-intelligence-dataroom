@@ -21,3 +21,9 @@ class DocumentRepository:
     def delete(self, db: Session, document: Document) -> None:
         db.delete(document)
         db.commit()
+
+    def update(self, db: Session, document: Document) -> Document:
+        db.add(document)
+        db.commit()
+        db.refresh(document)
+        return document

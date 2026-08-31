@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     frontend_origin: str = "http://localhost:5173"
     document_storage_path: str = "./data/documents"
     document_max_upload_size_mb: int = 25
+    document_chunk_size_words: int = 1000
+    document_chunk_overlap_words: int = 150
 
     azure_storage_account: str | None = None
     azure_storage_container: str | None = None

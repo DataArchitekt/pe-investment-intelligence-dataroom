@@ -16,6 +16,9 @@ class DocumentRead(BaseModel):
     file_size: int
     content_type: str
     original_file_name: str
+    page_count: int
+    processing_error: str | None
+    chunk_count: int
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

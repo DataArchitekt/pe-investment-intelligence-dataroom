@@ -33,6 +33,8 @@ def ensure_schema() -> None:
         "file_size": "INTEGER NOT NULL DEFAULT 0",
         "content_type": "VARCHAR(255) NOT NULL DEFAULT 'application/octet-stream'",
         "original_file_name": "VARCHAR(255) NOT NULL DEFAULT ''",
+        "page_count": "INTEGER NOT NULL DEFAULT 0",
+        "processing_error": "TEXT",
     }
     with engine.begin() as connection:
         for name, definition in additions.items():
